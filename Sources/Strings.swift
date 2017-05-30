@@ -108,7 +108,7 @@ extension String {
         return substring(with: range)
     }
 
-    public func lstrip(_ charset: CharacterSet) -> String {
+    public func lstrip(_ charset: CharacterSet = .whitespaces) -> String {
         var toTrim = 0
         // Breaks once we hit the first non-trimmable character
         for char in self.characters {
@@ -120,7 +120,7 @@ extension String {
         return self.substring(from: toTrim)
     }
 
-    public func rstrip(_ charset: CharacterSet) -> String {
+    public func rstrip(_ charset: CharacterSet = .whitespaces) -> String {
         var toTrim = 0
         // Breaks once we hit the first non-trimmable character
         for char in self.characters.reversed() {
@@ -132,7 +132,7 @@ extension String {
         return self.substring(to: toTrim)
     }
 
-    public func strip(_ charset: CharacterSet) -> String {
+    public func strip(_ charset: CharacterSet = .whitespaces) -> String {
         return self.trimmingCharacters(in: charset)
     }
 }

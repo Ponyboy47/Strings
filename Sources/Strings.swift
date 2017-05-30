@@ -28,7 +28,7 @@ extension String {
 			srandom(UInt32(time(nil)))
             let rand: Int = random() % len
             #else
-            let rand: Int = arc4random_uniform(len)
+            let rand: Int = Int(arc4random_uniform(len))
             #endif
             let nextChar = letters.character(at: rand)
             randomString += String(nextChar)

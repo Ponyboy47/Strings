@@ -31,22 +31,27 @@ extension String {
             let rand: Int = Int(arc4random_uniform(len))
             #endif
             let nextChar = letters.character(at: rand)
-            randomString += String(nextChar)
+            randomString += "\(Character(UnicodeScalar(nextChar)!))"
         }
         return randomString
+    }
+
+    /// The number of characters in the string
+    public var length: Int {
+        return characters.count
     }
 
     /// Capitalizes the first character and lowercases the rest
     public var sentenceCased: String {
         let first = String(characters.prefix(1)).capitalized
-        let other = String(characters.dropFirst())
+        let other = String(characters.dropFirst()).lowercased()
         return first + other
     }
 
     /// Capitalizes the first letter of every word and lowercases the rest
     public var wordCased: String {
         let charset = CharacterSet(charactersIn: " _")
-        let words = self.components(separatedBy: charset)
+        let words = components(separatedBy: charset)
 
         var capitalizedString = ""
 
@@ -82,63 +87,156 @@ extension String {
         return beginning == string
     }
 
+    /// Removes the first character from the string
 	public func dropFirst() -> String {
+        guard characters.count > 0 else { return self }
         return String(characters.dropFirst())
     }
 
+    /// Removes the last character from the string
 	public func dropLast() -> String {
+        guard characters.count > 0 else { return self }
         return String(characters.dropLast())
     }
 
+    /**
+     Gets the substring from one integer index to another
+     - Parameter from: The index of the character to start the substring. Default is 0
+     - Parameter to: The final index of the character to end the substring. Default is -1
+     - Returns: A string of the substring from the starting index to the ending one
+     */
     public func substring(from: Int = 0, to: Int = -1) -> String {
-        let to = to == -1 ? characters.count : to
+        var from = from <= -1 ? characters.count + from : from
+        var to = to <= -1 ? characters.count + to + 1 : to
         var startIdx: String.Index
         var endIdx: String.Index
-        if from == 0 {
+        if from >= characters.count {
+            from = characters.count
+            startIdx = endIndex
+        } else if from == 0 {
             startIdx = startIndex
         } else {
             startIdx = index(startIndex, offsetBy: from)
         }
-        if to == characters.count {
+        if to >= characters.count {
+            to = characters.count
             endIdx = endIndex
+        } else if to == 0 {
+            endIdx = startIndex
         } else {
             endIdx = index(startIndex, offsetBy: to)
         }
-        let range = startIdx..<endIdx
+        guard startIdx != endIdx else { return "" }
+        var range: Range<String.Index>
+        if from < to {
+            range = startIdx..<endIdx
+        } else {
+            range = endIdx..<startIdx
+        }
         return substring(with: range)
     }
 
-    public func lstrip(_ charset: CharacterSet = .whitespaces) -> String {
+    /**
+     Strips characters from the left side of the String
+     - Parameter in charset: A `CharacterSet` to remove from the left side of the string
+     - Returns: A String with the left side having been trimmed
+     */
+    public func lstrip(in charset: CharacterSet?) -> String {
+        var trim: CharacterSet
+        if charset != nil {
+            trim = charset!
+        } else {
+            trim = .whitespaces
+        }
         var toTrim = 0
         // Breaks once we hit the first non-trimmable character
-        for char in self.characters {
-            if !charset.contains(char.unicodeScalar) {
+        for char in characters {
+            if !trim.contains(char.unicodeScalar) {
                 break
             }
             toTrim += 1
         }
-        return self.substring(from: toTrim)
+        return substring(from: toTrim)
     }
 
-    public func rstrip(_ charset: CharacterSet = .whitespaces) -> String {
+    /**
+     Strips characters from the left side of the String
+     - Parameter charsin: A String containing all the characters that should be removed from the left side of the string
+     - Returns: A String with the left side having been trimmed
+     */
+    public func lstrip(_ charsin: String? = nil) -> String {
+        if let str = charsin {
+            return lstrip(in: CharacterSet(charactersIn: str))
+        }
+        return lstrip(in: nil)
+    }
+
+    /**
+     Strips characters from the right side of the String
+     - Parameter in charset: A `CharacterSet` to remove from the right side of the string
+     - Returns: A String with the right side having been trimmed
+     */
+    public func rstrip(in charset: CharacterSet?) -> String {
+        var trim: CharacterSet
+        if charset != nil {
+            trim = charset!
+        } else {
+            trim = .whitespaces
+        }
         var toTrim = 0
         // Breaks once we hit the first non-trimmable character
-        for char in self.characters.reversed() {
-            if !charset.contains(char.unicodeScalar) {
+        for char in characters.reversed() {
+            if !trim.contains(char.unicodeScalar) {
                 break
             }
             toTrim += 1
         }
-        return self.substring(to: toTrim)
+        toTrim = characters.count - toTrim
+        return substring(to: toTrim)
     }
 
-    public func strip(_ charset: CharacterSet = .whitespaces) -> String {
-        return self.trimmingCharacters(in: charset)
+    /**
+     Strips characters from the right side of the String
+     - Parameter charsin: A String containing all the characters that should be removed from the right side of the string
+     - Returns: A String with the right side having been trimmed
+     */
+    public func rstrip(_ charsin: String? = nil) -> String {
+        if let str = charsin {
+            return rstrip(in: CharacterSet(charactersIn: str))
+        }
+        return rstrip(in: nil)
+    }
+
+    /**
+     Strips characters from both sides of the String
+     - Parameter in charset: A `CharacterSet` to remove from the outter sides of the string
+     - Returns: A String with both sides having been trimmed
+     */
+    public func strip(in charset: CharacterSet?) -> String {
+        var trim: CharacterSet
+        if charset != nil {
+            trim = charset!
+        } else {
+            trim = .whitespaces
+        }
+        return trimmingCharacters(in: trim)
+    }
+
+    /**
+     Strips characters from both sides of the String
+     - Parameter charsin: A String containing all the characters that should be removed from the outter sides of the string
+     - Returns: A String with both sides having been trimmed
+     */
+    public func strip(_ charsin: String? = nil) -> String {
+        if let str = charsin {
+            return strip(in: CharacterSet(charactersIn: str))
+        }
+        return strip(in: nil)
     }
 }
 
-extension Character
-{
+extension Character {
+    /// The UnicodeScalar value of the character
     public var unicodeScalar: UnicodeScalar {
         let characterString = String(self)
         let scalars = characterString.unicodeScalars

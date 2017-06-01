@@ -153,7 +153,7 @@ class StringsTests: XCTestCase {
 }
 
 #if os(Linux)
-extension StringTests {
+extension StringsTests {
     static var allTests = [
         ("testUniq", testUniq),
         ("testUniqCount", testUniqCount),

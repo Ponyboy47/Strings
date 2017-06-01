@@ -42,4 +42,17 @@ test.ends(with: "finish")
 // Easily generate a random string (of 64 characters)
 print(String.uniq)
 // vra10hSYFGh6Ba3y6J79oaFQv19BV4vzyUkgs542yuGS7HarbBb7FQpMzEvt4H7D
+
+// Working with substrings is a little easier. Instead of returning character arrays or slices or anything, we just return a new String
+let phone = "8323811692"
+print(phone.substring(from: -4)) // 1692
+print(phone.substring(to: -4)) // 832381
+print(phone.substring(from: 4, to: -4)) // 381
+
+// Validation
+// Email validation
+let goodEmail = "ponyboy47@gmail.com"
+let badEmail = "example@badEmail"
+goodEmail.validate(EmailValidator.self) // true
+badEmail.validate(EmailValidator.self) // false
 ```

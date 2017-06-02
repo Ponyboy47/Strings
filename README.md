@@ -7,7 +7,7 @@ Strings is a small set of extensions to the default String implementation in swi
 
 Include the following in your Package.swift
 ```swift
-.Package(url: "https://github.com/Ponyboy47/Strings.git", majorVersion: 0)
+.Package(url: "https://github.com/Ponyboy47/Strings.git", majorVersion: 1)
 ```
 
 then just import it!

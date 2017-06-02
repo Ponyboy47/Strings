@@ -13,7 +13,7 @@ import Foundation
 extension String {
     /// A randomly generated, unique string of 64 characters
     public static var uniq: String {
-        let letters: NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let letters: String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         #if os(Linux)
         let len = letters.length
         #else
@@ -31,7 +31,7 @@ extension String {
             let rand: Int = Int(arc4random_uniform(len))
             #endif
             let nextChar = letters.character(at: rand)
-            randomString += "\(Character(UnicodeScalar(nextChar)!))"
+            randomString += "\(nextChar)"
         }
         return randomString
     }
@@ -233,6 +233,26 @@ extension String {
         }
         return strip(in: nil)
     }
+
+    /**
+     Gets the character at the specified index in the string
+     - Parameter at index: The index of the character to return
+     - Returns: The Character at the specified index
+     */
+    public func character(at index: Int) -> Character {
+        var index = index
+        if index > length {
+            index = length
+        }
+        return characters[characters.index(characters.startIndex, offsetBy: index)]
+    }
+
+    #if os(Linux)
+    /// Returns a C compatible string, this var is only needed for Linux since String already conforms to CVarArg on the Apple platforms
+    public var cString: CVarArg? {
+        return (self as? NSString)?.utf8String
+    }
+    #endif
 }
 
 extension Character {

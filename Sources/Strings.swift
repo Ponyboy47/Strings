@@ -24,8 +24,6 @@ extension String {
 
         for _ in 1...64 {
             #if os(Linux)
-            // TODO: linux random doesn't work correctly (but I'm not using it so...oh well)
-			srandom(UInt32(time(nil)))
             let rand: Int = random() % len
             #else
             let rand: Int = Int(arc4random_uniform(len))
@@ -250,7 +248,7 @@ extension String {
     #if os(Linux)
     /// Returns a C compatible string, this var is only needed for Linux since String already conforms to CVarArg on the Apple platforms
     public var cString: CVarArg? {
-        return (self as? NSString)?.utf8String
+        return NSString(string: self).utf8String
     }
     #endif
 }

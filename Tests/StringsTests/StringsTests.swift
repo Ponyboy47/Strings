@@ -22,7 +22,7 @@ class StringsTests: XCTestCase {
         XCTAssertEqual(testStr.sentenceCased, "This is a test string!")
     }
 
-    func testWordCased() {
+    func testWordCase() {
         XCTAssertEqual(testStr.wordCased, "This Is A Test String!")
     }
 

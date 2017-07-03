@@ -11,16 +11,21 @@
 import Foundation
 
 extension String {
-    /// A randomly generated, unique string of 64 characters
+    /// A randomly generated, unique string of 64 alphanumeric characters (upper and lowercased letter)
     public static var uniq: String {
-        let letters: String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let letters: [Character] = ["a","b","c","d","e","f","g","h","i","j","k",
+                                    "l","m","n","o","p","q","r","s","t","u","v",
+                                    "w","x","y","z","A","B","C","D","E","F","G",
+                                    "H","I","J","K","L","M","N","O","P","Q","R",
+                                    "S","T","U","V","W","X","Y","Z","0","1","2",
+                                    "3","4","5","6","7","8","9"]
         #if os(Linux)
-        let len = letters.length
+        let len = letters.count
         #else
-        let len = UInt32(letters.length)
+        let len = UInt32(letters.count)
         #endif
 
-        var randomString = ""
+        var randomString: String = ""
 
         for _ in 1...64 {
             #if os(Linux)
@@ -28,21 +33,90 @@ extension String {
             #else
             let rand: Int = Int(arc4random_uniform(len))
             #endif
-            let nextChar = letters.character(at: rand)
-            randomString += "\(nextChar)"
+            randomString.append(letters[rand])
         }
         return randomString
     }
 
-    /// The number of characters in the string
-    public var length: Int {
-        return characters.count
+    /**
+     A randomly generated, unique string based on the characters of the String parameter
+     - Parameters:
+       - length: The size (in characters) of the random string to generate
+       - from: A String containing the characters to use in the randomly generated string
+     - Returns: A string
+     */
+    public static func uniq(length: Int, from letters: String) -> String {
+        #if os(Linux)
+            let len = letters.count
+        #else
+            let len = UInt32(letters.count)
+        #endif
+
+        var randomString: String = ""
+
+        for _ in 1...length {
+            #if os(Linux)
+                let rand: Int = random() % len
+            #else
+                let rand: Int = Int(arc4random_uniform(len))
+            #endif
+            randomString.append(letters[rand])
+        }
+        return randomString
     }
+
+    /**
+     A randomly generated, unique string based on the characters in the Character array
+     - Parameters:
+     - length: The size (in characters) of the random string to generate
+     - from: An array of Characters to use in the randomly generated string
+     - Returns: A string
+     */
+    public static func uniq(length: Int, from characters: [Character]) -> String {
+        #if os(Linux)
+            let len = characters.count
+        #else
+            let len = UInt32(characters.count)
+        #endif
+
+        var randomString: String = ""
+
+        for _ in 1...length {
+            #if os(Linux)
+                let rand: Int = random() % len
+            #else
+                let rand: Int = Int(arc4random_uniform(len))
+            #endif
+            randomString.append(characters[rand])
+        }
+        return randomString
+    }
+
+    #if !os(Linux)
+    /**
+     A randomly generated, unique string based on the characters in the NSCharacterSet
+     - Parameters:
+     - length: The size (in characters) of the random string to generate
+     - from: An NSCharacterSet to use in the randomly generated string
+     - Returns: A string
+     */
+    public static func uniq(length: Int, from charset: NSCharacterSet) -> String {
+        let len = UInt32(charset.characters.count)
+
+        var randomString: String = ""
+
+        for _ in 1...length {
+            let rand: Int = Int(arc4random_uniform(len))
+            randomString.append(charset.characters[rand])
+        }
+        return randomString
+    }
+    #endif
 
     /// Capitalizes the first character and lowercases the rest
     public var sentenceCased: String {
-        let first = String(characters.prefix(1)).capitalized
-        let other = String(characters.dropFirst()).lowercased()
+        let first = String(self[0]).capitalized
+        let other = String(dropFirst()).lowercased()
         return first + other
     }
 
@@ -52,86 +126,35 @@ extension String {
         let words = components(separatedBy: charset)
 
         var capitalizedString = ""
+        let spaceChar: Character = " "
 
         for word in words {
-            capitalizedString += word.sentenceCased + " "
+            capitalizedString += word.sentenceCased
+            if word != words.last! {
+                capitalizedString.append(spaceChar)
+            }
         }
-        return capitalizedString.dropLast()
+        return capitalizedString
     }
 
+    @available(*, unavailable, message: "Use the Swift String builtin 'hasSuffix' instead.")
     /**
      Checks if a string ends with a specified string
      - Parameter string: The string to test against
      - Returns: A Boolean indicating whether or not the string ends in the specified parameter string
-    */  
+     */
     public func ends(with string: String) -> Bool {
-        if string.characters.count > characters.count {
-            return false
-        }
-        let ending = substring(from: characters.count - string.characters.count, to: characters.count)
-        return ending == string
+        return hasSuffix(string)
     }
 
+    @available(*, unavailable, message: "Use the Swift String builtin 'hasPrefix' instead.")
     /**
      Checks if a string starts with a specified string
      - Parameter string: The string to test against
      - Returns: A Boolean indicating whether or not the string starts in the specified parameter string
-     */ 
-    public func starts(with string: String) -> Bool {
-        if string.characters.count > characters.count {
-            return false
-        }
-        let beginning = substring(to: string.characters.count)
-        return beginning == string
-    }
-
-    /// Removes the first character from the string
-	public func dropFirst() -> String {
-        guard characters.count > 0 else { return self }
-        return String(characters.dropFirst())
-    }
-
-    /// Removes the last character from the string
-	public func dropLast() -> String {
-        guard characters.count > 0 else { return self }
-        return String(characters.dropLast())
-    }
-
-    /**
-     Gets the substring from one integer index to another
-     - Parameter from: The index of the character to start the substring. Default is 0
-     - Parameter to: The final index of the character to end the substring. Default is -1
-     - Returns: A string of the substring from the starting index to the ending one
      */
-    public func substring(from: Int = 0, to: Int = -1) -> String {
-        var from = from <= -1 ? characters.count + from : from
-        var to = to <= -1 ? characters.count + to + 1 : to
-        var startIdx: String.Index
-        var endIdx: String.Index
-        if from >= characters.count {
-            from = characters.count
-            startIdx = endIndex
-        } else if from == 0 {
-            startIdx = startIndex
-        } else {
-            startIdx = index(startIndex, offsetBy: from)
-        }
-        if to >= characters.count {
-            to = characters.count
-            endIdx = endIndex
-        } else if to == 0 {
-            endIdx = startIndex
-        } else {
-            endIdx = index(startIndex, offsetBy: to)
-        }
-        guard startIdx != endIdx else { return "" }
-        var range: Range<String.Index>
-        if from < to {
-            range = startIdx..<endIdx
-        } else {
-            range = endIdx..<startIdx
-        }
-        return substring(with: range)
+    public func starts(with string: String) -> Bool {
+        return hasPrefix(string)
     }
 
     /**
@@ -148,13 +171,13 @@ extension String {
         }
         var toTrim = 0
         // Breaks once we hit the first non-trimmable character
-        for char in characters {
+        for char in self {
             if !trim.contains(char.unicodeScalar) {
                 break
             }
             toTrim += 1
         }
-        return substring(from: toTrim)
+        return String(self[self.index(of: toTrim)...])
     }
 
     /**
@@ -183,14 +206,14 @@ extension String {
         }
         var toTrim = 0
         // Breaks once we hit the first non-trimmable character
-        for char in characters.reversed() {
+        for char in reversed() {
             if !trim.contains(char.unicodeScalar) {
                 break
             }
             toTrim += 1
         }
-        toTrim = characters.count - toTrim
-        return substring(to: toTrim)
+        toTrim = count - toTrim
+        return String(self[..<self.index(of: toTrim)])
     }
 
     /**
@@ -232,19 +255,6 @@ extension String {
         return strip(in: nil)
     }
 
-    /**
-     Gets the character at the specified index in the string
-     - Parameter at index: The index of the character to return
-     - Returns: The Character at the specified index
-     */
-    public func character(at index: Int) -> Character {
-        var index = index
-        if index > length {
-            index = length
-        }
-        return characters[characters.index(characters.startIndex, offsetBy: index)]
-    }
-
     #if os(Linux)
     /// Returns a C compatible string, this var is only needed for Linux since String already conforms to CVarArg on the Apple platforms
     public var cString: CVarArg? {
@@ -262,3 +272,25 @@ extension Character {
         return UnicodeScalar(scalars[scalars.startIndex].value)!
     }
 }
+
+#if !os(Linux)
+extension NSCharacterSet {
+    var characters: [Character] {
+        var chars = [Character]()
+        for plane: UInt8 in 0...16 {
+            if self.hasMemberInPlane(plane) {
+                let p0 = UInt32(plane) << 16
+                let p1 = (UInt32(plane) + 1) << 16
+                for c: UTF32Char in p0..<p1 {
+                    if self.longCharacterIsMember(c) {
+                        var c1 = c.littleEndian
+                        let s = String.init(bytesNoCopy: &c1, length: c.bitWidth, encoding: .utf32LittleEndian, freeWhenDone: true)!
+                        chars.append(Character(s))
+                    }
+                }
+            }
+        }
+        return chars
+    }
+}
+#endif

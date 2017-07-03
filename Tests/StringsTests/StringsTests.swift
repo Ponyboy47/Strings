@@ -2,20 +2,18 @@ import XCTest
 @testable import Strings
 
 class StringsTests: XCTestCase {
-    let testStr = "tHiS iS a TeSt StRiNg!"
+    let testStr: String = "tHiS iS a TeSt StRiNg!"
 
     func testUniq() {
-        let uniq1 = String.uniq
-        let uniq2 = String.uniq
-        XCTAssertNotEqual(uniq1, uniq2)
+        for _ in 1...10 {
+            let uniq1 = String.uniq
+            let uniq2 = String.uniq
+            XCTAssertNotEqual(uniq1, uniq2)
+        }
     }
 
     func testUniqCount() {
-        XCTAssertEqual(String.uniq.length, 64)
-    }
-
-    func testLength() {
-        XCTAssertEqual(testStr.length, testStr.characters.count)
+        XCTAssertEqual(String.uniq.count, 64)
     }
 
     func testSentenceCase() {
@@ -26,83 +24,119 @@ class StringsTests: XCTestCase {
         XCTAssertEqual(testStr.wordCased, "This Is A Test String!")
     }
 
-    func testEndsWith1() {
-        XCTAssertTrue(testStr.ends(with: "StRiNg!"))
+    func testSubstringFullRange() {
+        let subStr: Substring = testStr[...]
+        XCTAssertEqual(subStr.string, testStr)
     }
 
-    func testEndsWith2() {
-        XCTAssertFalse(testStr.ends(with: "tHiS"))
+    func testSubstringFromRange() {
+        let subStr: Substring = testStr[17...]
+        XCTAssertEqual(subStr.string, "RiNg!")
     }
 
-    func testStartsWith1() {
-        XCTAssertTrue(testStr.starts(with: "tHiS"))
+    func testSubstringUpToRange() {
+        let subStr: Substring = testStr[..<5]
+        XCTAssertEqual(subStr.string, "tHiS ")
     }
 
-    func testStartsWith2() {
-        XCTAssertFalse(testStr.starts(with: "StRiNg!"))
+    func testSubstringIncludingRange() {
+        let subStr: Substring = testStr[...5]
+        XCTAssertEqual(subStr.string, "tHiS i")
     }
 
-    func testDropFirst() {
-        XCTAssertEqual(testStr.dropFirst(), "HiS iS a TeSt StRiNg!")
+    func testSubstringRangeUpTo() {
+        let subStr: Substring = testStr[5..<17]
+        XCTAssertEqual(subStr.string, "iS a TeSt St")
     }
 
-    func testDropLast() {
-        XCTAssertEqual(testStr.dropLast(), "tHiS iS a TeSt StRiNg")
+    func testSubstringRangeIncluding() {
+        let subStr: Substring = testStr[5...17]
+        XCTAssertEqual(subStr.string, "iS a TeSt StR")
     }
 
-    func testSubstring1() {
-        let subStr1 = testStr.substring()
-        XCTAssertEqual(subStr1, testStr)
+    func testSubstringNegativeFromRange() {
+        let subStr: Substring = testStr[(-5)...]
+        XCTAssertEqual(subStr.string, "RiNg!")
     }
 
-    func testSubstring2() {
-        let subStr2 = testStr.substring(from: 17)
-        XCTAssertEqual(subStr2, "RiNg!")
+    func testSubstringUpToNegativeRange() {
+        let subStr: Substring = testStr[..<(-5)]
+        XCTAssertEqual(subStr.string, "tHiS iS a TeSt St")
     }
 
-    func testSubstring3() {
-        let subStr3 = testStr.substring(to: 5)
-        XCTAssertEqual(subStr3, "tHiS ")
+    func testSubstringIncludingNegativeRange() {
+        let subStr: Substring = testStr[...(-5)]
+        XCTAssertEqual(subStr.string, "tHiS iS a TeSt StR")
     }
 
-    func testSubstring4() {
-        let subStr4 = testStr.substring(from: 5, to: 17)
-        XCTAssertEqual(subStr4, "iS a TeSt St")
+    func testSubstringRangeUpToNegative() {
+        let subStr: Substring = testStr[(-17)..<(-5)]
+        XCTAssertEqual(subStr.string, "iS a TeSt St")
     }
 
-    func testSubstring5() {
-        let subStr5 = testStr.substring(from: -5)
-        XCTAssertEqual(subStr5, "RiNg!")
+    func testSubstringRangeIncludingNegative() {
+        let subStr: Substring = testStr[(-17)...(-5)]
+        XCTAssertEqual(subStr.string, "iS a TeSt StR")
     }
 
-    func testSubstring6() {
-        let subStr6 = testStr.substring(to: -5)
-        XCTAssertEqual(subStr6, "tHiS iS a TeSt StR")
+    func testSubstringFromExceedingRange() {
+        let subStr8: Substring = testStr[100...]
+        XCTAssertEqual(subStr8.string, "!")
     }
 
-    func testSubstring7() {
-        let subStr7 = testStr.substring(from: 17, to: 5)
-        XCTAssertEqual(subStr7, "iS a TeSt St")
+    func testSubstringUpToSameRange() {
+        let subStr9: Substring = testStr[5..<5]
+        XCTAssertEqual(subStr9.string, "")
     }
 
-    func testSubstring8() {
-        let subStr8 = testStr.substring(from: 100)
-        XCTAssertEqual(subStr8, "")
+    func testSubstringIncludingSameRange() {
+        let subStr9: Substring = testStr[5...5]
+        XCTAssertEqual(subStr9.string, "i")
     }
 
-    func testSubstring9() {
-        let subStr9 = testStr.substring(from: 5, to: 5)
-        XCTAssertEqual(subStr9, "")
+    func testSubstringUpToExceedingRange() {
+        let subStr11: Substring = testStr[..<100]
+        XCTAssertEqual(subStr11.string, testStr.dropLast().string)
     }
 
-    func testSubstring10() {
-        let subStr10 = testStr.substring(from: -17, to: -5)
-        XCTAssertEqual(subStr10, "iS a TeSt StR")
+    func testSubstringIncludingExceedingRange() {
+        let subStr11: Substring = testStr[...100]
+        XCTAssertEqual(subStr11.string, testStr)
     }
 
-    func testSubstring11() {
-        let subStr11 = testStr.substring(to: 1000)
-        XCTAssertEqual(subStr11, testStr)
+    func testSubstringFromCharacterRange() {
+        let subStr: Substring? = testStr["R"...]
+        XCTAssertNotNil(subStr)
+        XCTAssertEqual(subStr!.string, "RiNg!")
+    }
+
+    func testSubstringUpToCharacterRange() {
+        let subStr: Substring? = testStr[..<" "]
+        XCTAssertNotNil(subStr)
+        XCTAssertEqual(subStr!.string, "tHiS")
+    }
+
+    func testSubstringIncludingCharacterRange() {
+        let subStr: Substring? = testStr[..." "]
+        XCTAssertNotNil(subStr)
+        XCTAssertEqual(subStr!.string, "tHiS ")
+    }
+
+    func testSubstringCharacterRangeUpTo() {
+        let subStr: Substring? = testStr[" "..<"R"]
+        XCTAssertNotNil(subStr)
+        XCTAssertEqual(subStr!.string, " iS a TeSt St")
+    }
+
+    func testSubstringCharacterRangeIncluding() {
+        let subStr: Substring? = testStr[" "..."R"]
+        XCTAssertNotNil(subStr)
+        XCTAssertEqual(subStr!.string, " iS a TeSt StR")
+    }
+
+    func testSubstringCharacterRangeMissingChar() {
+        let subStr: Substring? = testStr[" "..."Z"]
+        XCTAssertNil(subStr)
     }
 
     func testLStrip1() {
@@ -157,26 +191,28 @@ extension StringsTests {
     static var allTests = [
         ("testUniq", testUniq),
         ("testUniqCount", testUniqCount),
-        ("testLength", testLength),
         ("testSentenceCase", testSentenceCase),
         ("testWordCase", testWordCase),
-        ("testEndsWith1", testEndsWith1),
-        ("testEndsWith2", testEndsWith2),
-        ("testStartsWith1", testStartsWith1),
-        ("testStartsWith2", testStartsWith2),
-        ("testDropFirst", testDropFirst),
-        ("testDropLast", testDropLast),
-        ("testSubstring1", testSubstring1),
-        ("testSubstring2", testSubstring2),
-        ("testSubstring3", testSubstring3),
-        ("testSubstring4", testSubstring4),
-        ("testSubstring5", testSubstring5),
-        ("testSubstring6", testSubstring6),
-        ("testSubstring7", testSubstring7),
-        ("testSubstring8", testSubstring8),
-        ("testSubstring9", testSubstring9),
-        ("testSubstring10", testSubstring10),
-        ("testSubstring11", testSubstring11),
+        ("testSubstringFullRange", testSubstringFullRange),
+        ("testSubstringFromRange", testSubstringFromRange),
+        ("testSubstringUpToRange", testSubstringUpToRange),
+        ("testSubstringIncludingRange", testSubstringIncludingRange),
+        ("testSubstringRangeUpTo", testSubstringRangeUpTo),
+        ("testSubstringRangeIncluding", testSubstringRangeIncluding),
+        ("testSubstringNegativeFromRange", testSubstringNegativeFromRange),
+        ("testSubstringRangeUpToNegative", testSubstringRangeUpToNegative),
+        ("testSubstringRangeIncludingNegative", testSubstringRangeIncludingNegative),
+        ("testSubstringFromExceedingRange", testSubstringFromExceedingRange),
+        ("testSubstringUpToSameRange", testSubstringUpToSameRange),
+        ("testSubstringIncludingSameRange", testSubstringIncludingSameRange),
+        ("testSubstringUpToExceedingRange", testSubstringUpToExceedingRange),
+        ("testSubstringIncludingExceedingRange", testSubstringIncludingExceedingRange),
+        ("testSubstringFromCharacterRange", testSubstringFromCharacterRange),
+        ("testSubstringUpToCharacterRange", testSubstringUpToCharacterRange),
+        ("testSubstringIncludingCharacterRange", testSubstringIncludingCharacterRange),
+        ("testSubstringCharacterRangeUpTo", testSubstringCharacterRangeUpTo),
+        ("testSubstringCharacterRangeIncluding", testSubstringCharacterRangeIncluding),
+        ("testSubstringCharacterRangeMissingChar", testSubstringCharacterRangeMissingChar),
         ("testLStrip1", testLStrip1),
         ("testLStrip2", testLStrip2),
         ("testLStrip3", testLStrip3),

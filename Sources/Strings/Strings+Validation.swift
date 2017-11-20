@@ -24,7 +24,7 @@ public struct AlphaValidator: Validator {
 		let charset = CharacterSet.letters
 		if value is String {
 			let str = value as! String
-            for char in str.characters {
+            for char in str {
                 if !charset.contains(char.unicodeScalar) {
                     return false
                 }
@@ -42,7 +42,7 @@ public struct AlphaNumericValidator: Validator {
 		let charset = CharacterSet.alphanumerics
 		if value is String {
 			let str = value as! String
-            for char in str.characters {
+            for char in str {
                 if !charset.contains(char.unicodeScalar) {
                     return false
                 }

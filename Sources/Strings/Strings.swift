@@ -115,8 +115,9 @@ extension String {
 
     /// Capitalizes the first character and lowercases the rest
     public var sentenceCased: String {
-        let first = String(self[0]).capitalized
-        let other = String(dropFirst()).lowercased()
+        guard !isEmpty else { return String() }
+        let first = String(self.first!).uppercased()
+        let other = self.dropFirst().lowercased()
         return first + other
     }
 
@@ -128,7 +129,7 @@ extension String {
         var capitalizedString = ""
         let spaceChar: Character = " "
 
-        for word in words {
+        for word in words where !word.isEmpty {
             capitalizedString += word.sentenceCased
             if word != words.last! {
                 capitalizedString.append(spaceChar)

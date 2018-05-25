@@ -3,6 +3,7 @@ import XCTest
 
 class StringsTests: XCTestCase {
     let testStr: String = "tHiS iS a TeSt StRiNg!"
+    let testStrSpaces: String = "tHiS  iS  a  TeSt  StRiNg!"
 
     func testUniq() {
         for _ in 1...10 {
@@ -20,8 +21,16 @@ class StringsTests: XCTestCase {
         XCTAssertEqual(testStr.sentenceCased, "This is a test string!")
     }
 
+    func testEmptySentenceCase() {
+        XCTAssertEqual("".sentenceCased, "")
+    }
+
     func testWordCase() {
         XCTAssertEqual(testStr.wordCased, "This Is A Test String!")
+    }
+
+    func testWordCaseExtraSpaces() {
+        XCTAssertEqual(testStrSpaces.wordCased, "This Is A Test String!")
     }
 
     func testSubstringFullRange() {
@@ -192,7 +201,9 @@ extension StringsTests {
         ("testUniq", testUniq),
         ("testUniqCount", testUniqCount),
         ("testSentenceCase", testSentenceCase),
+        ("testEmptySentenceCase", testEmptySentenceCase),
         ("testWordCase", testWordCase),
+        ("testWordCaseExtraSpaces", testWordCaseExtraSpaces),
         ("testSubstringFullRange", testSubstringFullRange),
         ("testSubstringFromRange", testSubstringFromRange),
         ("testSubstringUpToRange", testSubstringUpToRange),
